@@ -10,12 +10,11 @@ namespace Tweet.Repository
     public interface IUsersRepository
     {
 
-        Task<IEnumerable<UserModel>> GetUsersAsync(string connString);
+        Task<IEnumerable<UserModel>> GetUsersAsync();
         Task<UserModel> GetUserAsync(Guid Id);
         Task CreateUserAsync(UserModel user);
         Task UpdateUserAsync(UserModel model);
         Task DeleteUserAsync(Guid id);
-        Task<UserModel> LoginAsync(LoginDto user);
         Task SignUpAsync(UserModel user);
         Task<UserModel> GetUserByEmailAsync(string email);
     }

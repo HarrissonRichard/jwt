@@ -32,17 +32,17 @@ namespace Tweet.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "developer")]
         public async Task<ActionResult<UserDto>> GetUsersAsync()
         {
-            string conn = GlobalConfig.GetConnString();
+            var users = (await repository.GetUsersAsync()).Select(user => user.AsDto());
 
-            //get the connection string
-            //estabilish connection with the db firts
-            //make the query and retriev it all
-            //get all users from my DB and return it
-            var users = (await repository.GetUsersAsync(conn)).Select(user => user.AsDto());
-
-            return Ok(users);
+            return Ok(new
+            {
+                status = "success",
+                total = users.Count(),
+                data = users
+            });
 
         }
         //ActionResult - allow us to return more than one type like not found or the actual item..

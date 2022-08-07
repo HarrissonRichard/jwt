@@ -90,13 +90,12 @@ namespace Tweet.Repository
             }
         }
 
-        public async Task<IEnumerable<UserModel>> GetUsersAsync(string connString)
+        public async Task<IEnumerable<UserModel>> GetUsersAsync()
         {
-            using (var connection = new SqlConnection(connString))
+            using (var connection = context.CreateConnection())
             {
-                string conn = GlobalConfig.GetConnString();
-                //make the QueryHaapeens
-                string sql = @"SELECT [Id],[Name],[Email],[Password],[CreatedAt],[Role]
+   
+                string sql = @"SELECT [id],[name],[email],[created_at],[role]
                     FROM [Users];
                 ";
 
@@ -128,19 +127,6 @@ namespace Tweet.Repository
 
                     throw;
                 }
-
-            }
-        }
-
-        public async Task<UserModel> LoginAsync(LoginDto user)
-        {
-
-            using (var connection = context.CreateConnection())
-            {
-
-                //finduser by mail - if valid
-
-                return new UserModel { };
 
             }
         }
