@@ -33,23 +33,6 @@ namespace Tweet.Services
             var tkn = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(tkn);
 
-            // var claims = new List<Claim>
-            // {
-            //     new Claim(ClaimTypes.Name, user.Name),
-            //     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            //     new Claim(ClaimTypes.Role, user.Role),
-            //     new Claim(JwtRegisteredClaimNames.Nbf, new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()),
-            //     new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(1)).ToUnixTimeSeconds().ToString())
-            // };
-
-            // var token = new JwtSecurityToken(
-            //     new JwtHeader(
-            //         new SigningCredentials(new SymmetricSecurityKey(),
-            //         SecurityAlgorithms.HmacSha256)),
-            //         new JwtPayload(claims));
-
-
-            // return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
     }
