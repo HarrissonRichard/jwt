@@ -131,7 +131,7 @@ namespace Tweet.Controllers
 
         }
 
-        [HttpGet("heroku")]
+        [HttpGet("/heroku")]
         [AllowAnonymous]
         public async Task<IEnumerable<UserModel>> getHerokuData()
         {
