@@ -40,16 +40,16 @@ namespace Tweet.Controllers
             var uz = User.Claims;
 
             var users = (await repository.GetUsersAsync()).Select(user => user.AsDto());
-            if (query["name"] != String.Empty)
-            {
-                string n = query["name"];
-                users = users.Where(user => user.Name.ToLower().Contains(n.ToLower()));
-            }
+            // if (query["name"] != String.Empty)
+            // {
+            //     string n = query["name"];
+            //     users = users.Where(user => user.Name.ToLower().Contains(n.ToLower()));
+            // }
 
-            if (query["sort"] != String.Empty)
-            {
-                users = users.OrderByDescending(user => user.Name);
-            }
+            // if (query["sort"] != String.Empty)
+            // {
+            //     users = users.OrderByDescending(user => user.Name);
+            // }
             return Ok(new
             {
                 status = "success",
@@ -131,7 +131,8 @@ namespace Tweet.Controllers
 
         }
 
-        [HttpGet("/heroku")]
+        [HttpGet]
+        [Route("/heroku")]
         [AllowAnonymous]
         public async Task<IEnumerable<UserModel>> getHerokuData()
         {
