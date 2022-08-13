@@ -132,6 +132,7 @@ namespace Tweet.Controllers
         }
 
         [HttpGet("heroku")]
+        [AllowAnonymous]
         public async Task<IEnumerable<UserModel>> getHerokuData()
         {
             var users = await repository.GetUsersAsync();
