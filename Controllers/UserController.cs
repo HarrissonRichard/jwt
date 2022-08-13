@@ -35,16 +35,30 @@ namespace Tweet.Controllers
         [Authorize(Roles = "developer")]
         public async Task<ActionResult<UserDto>> GetUsersAsync()
         {
-            var users = (await repository.GetUsersAsync()).Select(user => user.AsDto());
+            var query = Request.Query;
+            var queryStr = Request.QueryString;
+            var uz = User.Claims;
 
+            var users = (await repository.GetUsersAsync()).Select(user => user.AsDto());
+            if (query["name"] != String.Empty)
+            {
+                string n = query["name"];
+                users = users.Where(user => user.Name.ToLower().Contains(n.ToLower()));
+            }
+
+            if (query["sort"] != String.Empty)
+            {
+                users = users.OrderByDescending(user => user.Name);
+            }
             return Ok(new
             {
                 status = "success",
                 total = users.Count(),
-                data = users
-            });
+                data = users,
 
+            });
         }
+
         //ActionResult - allow us to return more than one type like not found or the actual item..
         [HttpGet("{id}")]
         [Authorize(Roles = "developer")]

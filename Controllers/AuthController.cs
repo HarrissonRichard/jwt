@@ -3,8 +3,10 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Catalog.Dtos;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tweet.Context;
+
 using Tweet.Dtos;
 using Tweet.Models;
 using Tweet.Repository;
@@ -76,9 +78,21 @@ namespace Tweet.Controllers
 
                 //match
                 //return user and token
-                var token = TokenService.GenerateToken(user);
                 user.Password = null;
+                var token = TokenService.GenerateToken(user);
+                var cookieCfg = TokenService.GenerateClaimsPrincipal(user);
 
+                CookieOptions cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false,
+                    Expires = DateTime.UtcNow.AddDays(1)
+                };
+
+                //Response.Cookies.Append("jwt_super_cookie", token, cookieOptions);
+
+
+                await HttpContext.SignInAsync(cookieCfg.Scheme, cookieCfg.PrincipalClaim, cookieCfg.AuthProperties);
 
                 return Ok(new
                 {

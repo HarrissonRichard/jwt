@@ -94,7 +94,7 @@ namespace Tweet.Repository
         {
             using (var connection = context.CreateConnection())
             {
-   
+
                 string sql = @"SELECT [id],[name],[email],[created_at],[role]
                     FROM [Users];
                 ";

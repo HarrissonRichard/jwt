@@ -6,9 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +23,7 @@ using Microsoft.OpenApi.Models;
 using Tweet.Context;
 using Tweet.Models;
 using Tweet.Repository;
+using Tweet.Services;
 using Tweet.Settings;
 using Tweet.Utils;
 
@@ -41,6 +45,8 @@ namespace Tweet
             services.AddSingleton<DapperContext>();
             services.AddSingleton<JwtSettings>();
             services.AddSingleton<IUsersRepository, SqlServerUsersRepository>();
+            services.AddSingleton<IAuthorizationMiddlewareResultHandler, AuthMiddlewareHandler>();
+
 
 
 
@@ -51,12 +57,34 @@ namespace Tweet
 
             });
 
+            services.AddAuthorization(opt =>
+            {
+                var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+
+                      JwtBearerDefaults.AuthenticationScheme,
+                      CookieAuthenticationDefaults.AuthenticationScheme
+                );
+
+                defaultAuthorizationPolicyBuilder = defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+                opt.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+
+            });
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
+    {
+        opt.SlidingExpiration = true;
+        opt.ExpireTimeSpan = new TimeSpan(0, 10, 0);
+        opt.Cookie.Name = "jwt_super_cookie";
+        opt.Cookie.HttpOnly = false;
+        opt.Cookie.SameSite = SameSiteMode.None;
+
+    });
+
             var key = Encoding.UTF8.GetBytes("suppersecret comming right from the dotnet secrets");
 
             services.AddAuthentication(x =>
             {
-
-
 
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -78,10 +106,24 @@ namespace Tweet
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tweet", Version = "v1" });
+
+
             });
 
 
             services.AddHealthChecks();
+
+
+            services.AddCors(policy =>
+            {
+
+                policy.AddPolicy("OpenCorsPolicy", opt =>
+
+                    opt.AllowAnyOrigin().
+                    AllowAnyHeader().
+                    AllowAnyMethod()
+                );
+            });
 
         }
 
@@ -95,10 +137,14 @@ namespace Tweet
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tweet v1"));
             }
 
-            app.UseHttpsRedirection();
+
+            // app.UseHttpsRedirection();
+            app.UseCors("OpenCorsPolicy");
 
             app.UseRouting();
 
+            //using the app.useAuthentication and authorization enables the httpContext.[User] property
+            //must be called before map
             app.UseAuthentication();
             app.UseAuthorization();
 
