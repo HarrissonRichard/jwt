@@ -136,9 +136,15 @@ namespace Tweet.Controllers
         [AllowAnonymous]
         public async Task<IEnumerable<UserModel>> getHerokuData()
         {
-            var users = await repository.GetUsersAsync();
+            List<UserModel> list = new List<UserModel>();
 
-            return users;
+
+            var user = new UserModel { Name = "James" };
+            list.Add(new UserModel { Name = "jay" });
+            list.Add(new UserModel { Name = "Mark" });
+            list.Add(user);
+
+            return list;
         }
 
     }
