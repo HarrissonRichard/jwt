@@ -128,6 +128,16 @@ namespace Tweet.Controllers
 
             await repository.DeleteUserAsync(id);
             return NoContent();
+
         }
+
+        [HttpGet("heroku")]
+        public async Task<IEnumerable<UserModel>> getHerokuData()
+        {
+            var users = await repository.GetUsersAsync();
+
+            return users;
+        }
+
     }
 }
